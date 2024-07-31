@@ -12,13 +12,13 @@ import numpy as np
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture(0)
 
-jasmine_image = face_recognition.load_image_file("jasmine.jpg")
+jasmine_image = face_recognition.load_image_file("faces/jasmine.jpg")
 jasmine_face_encoding = face_recognition.face_encodings(jasmine_image)[0]
 
-peter_image = face_recognition.load_image_file("peter.jpg")
+peter_image = face_recognition.load_image_file("faces/peter.jpg")
 peter_face_encoding = face_recognition.face_encodings(peter_image)[0]
 
-fucheng_image = face_recognition.load_image_file("fucheng.jpg")
+fucheng_image = face_recognition.load_image_file("faces/fucheng.jpg")
 fucheng_face_encoding = face_recognition.face_encodings(fucheng_image)[0]
 
 # Create arrays of known face encodings and their names

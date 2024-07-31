@@ -71,7 +71,7 @@ def face_data(image, CallOut):
     return faces_data
 
 # Reading reference images from directory
-ref_images = ["Ref_image_13.jpg", "Ref_image_26.jpg", "Ref_image_45.jpg"]
+ref_images = ["focal_length/Ref_image_13.jpg", "focal_length/Ref_image_26.jpg", "focal_length/Ref_image_45.jpg"]
 focal_lengths = []
 
 for i, ref_image_path in enumerate(ref_images):
