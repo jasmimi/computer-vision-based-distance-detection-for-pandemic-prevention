@@ -5,8 +5,8 @@ import numpy as np
 from init_face_encodings import known_face_encodings, known_face_names
 
 # Focal-length variables
-Known_distances = [13.976, 26.772, 45.276]  # Inches
-Known_width = 5.70866  # Inches
+Known_distances = [13.976, 26.772, 26.9685, 44.88189, 45.276, 64.96063]  # Inches
+Known_width = 5.31496  # Inches
 
 # Camera object, #0 is default/webcam
 cap = cv2.VideoCapture(0)
@@ -39,7 +39,7 @@ def face_data(image, CallOut):
     return faces_data
 
 # Reading reference images from directory
-ref_images = ["focal_length/Ref_image_13.jpg", "focal_length/Ref_image_26.jpg", "focal_length/Ref_image_45.jpg"]
+ref_images = ["focal_length/Ref_image_13.jpg", "focal_length/Ref_image_26.jpg", "focal_length/Ref_image_27.jpg", "focal_length/Ref_image_44.jpg", "focal_length/Ref_image_45.jpg", "focal_length/Ref_image_65.jpg"]
 focal_lengths = []
 
 for i, ref_image_path in enumerate(ref_images):
