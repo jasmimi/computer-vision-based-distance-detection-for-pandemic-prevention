@@ -5,8 +5,8 @@ import numpy as np
 from init_face_encodings import known_face_encodings, known_face_names
 
 # Focal-length variables
-Known_distances = [13.976, 26.772, 26.9685, 44.88189, 45.276, 64.96063]  # Inches
-Known_width = 5.31496  # Inches
+Known_distances = [0.64, 0.65] # meters
+Known_width = 0.16 # meters
 
 # Camera object, #0 is default/webcam
 cap = cv2.VideoCapture(0)
@@ -39,7 +39,7 @@ def face_data(image, CallOut):
     return faces_data
 
 # Reading reference images from directory
-ref_images = ["focal_length/Ref_image_13.jpg", "focal_length/Ref_image_26.jpg", "focal_length/Ref_image_27.jpg", "focal_length/Ref_image_44.jpg", "focal_length/Ref_image_45.jpg", "focal_length/Ref_image_65.jpg"]
+ref_images = ["focal_length/Ref_image_640mm.jpg", "focal_length/Ref_image_650mm.jpg"]
 focal_lengths = []
 
 for i, ref_image_path in enumerate(ref_images):
@@ -53,7 +53,7 @@ for i, ref_image_path in enumerate(ref_images):
         ref_image_face_width, _, _, _, _ = ref_image_face_data[0]
         focal_length = FocalLength(Known_distances[i], Known_width, ref_image_face_width)
         focal_lengths.append(focal_length)
-        print(f"Focal length for {Known_distances[i]} inches: {focal_length}")
+        print(f"Focal length for {Known_distances[i]} meters: {focal_length}")
 
 if not focal_lengths:
     print("Error: No valid focal lengths found. Exiting.")
@@ -115,7 +115,6 @@ while True:
             if face_x <= left <= face_x + face_width_in_frame and face_y <= top <= face_y + (bottom - top):
                 if face_width_in_frame != 0:
                     Distance = Distance_finder(Focal_length_found, Known_width, face_width_in_frame)
-                    Distance = Distance * 0.0254  # Convert inches to meters
                     Distance = round(Distance, 2)
                     distances[name] = Distance
                 break
