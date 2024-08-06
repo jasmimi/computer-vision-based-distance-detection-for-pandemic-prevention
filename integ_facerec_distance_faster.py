@@ -71,8 +71,11 @@ face_encodings = []
 face_names = []
 process_this_frame = True
 
+quadrant_colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]  # Blue, Green, Red, Yellow
+
 while True:
     _, frame = cap.read()
+    height, width, _ = frame.shape
     faces_data = face_data(frame, True)
 
     if process_this_frame:
@@ -111,6 +114,13 @@ while True:
         bottom *= 4
         left *= 4
 
+        face_center_x = (left + right) // 2
+        if face_center_x < width // 2:
+            color = quadrant_colors[0] if face_center_x < width // 4 else quadrant_colors[1]
+        else:
+            color = quadrant_colors[2] if face_center_x < 3 * width // 4 else quadrant_colors[3]
+
+
         for face_width_in_frame, face_x, face_y, FC_X, FC_Y in faces_data:
             if face_x <= left <= face_x + face_width_in_frame and face_y <= top <= face_y + (bottom - top):
                 if face_width_in_frame != 0:
@@ -120,11 +130,11 @@ while True:
                 break
 
         # Draw a box around the face"
-        cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+        cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
 
         # Draw a label with a name below the face
         label = f"{name}, {distances.get(name,'N/A')} m"
-        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), color, cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         cv2.putText(frame, label, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
