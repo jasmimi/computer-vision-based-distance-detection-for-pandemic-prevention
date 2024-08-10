@@ -2,10 +2,11 @@
 import face_recognition
 import cv2
 import numpy as np
+import math
 from init_face_encodings import known_face_encodings, known_face_names
 
 # Focal-length variables
-Known_distances = [0.64, 0.65] # meters
+Known_distances = [0.7, 0.5] # meters
 Known_width = 0.16 # meters
 
 # Camera object, #0 is default/webcam
@@ -38,8 +39,19 @@ def face_data(image, CallOut):
         faces_data.append((w, x, y, face_center_x, face_center_y))
     return faces_data
 
+def calculate_pixel_distance(f1, f2):
+    x1, y1 = f1[3], f1[4]
+    x2, y2 = f2[3], f2[4]
+    distance_pixels = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    return distance_pixels
+
+def calculate_real_distance(f1_distance, f2_distance, pixel_distance, ref_pixel_width, actual_width):
+    avg_face_distance = (f1_distance + f2_distance) / 2
+    real_distance = (pixel_distance / ref_pixel_width) * actual_width * avg_face_distance
+    return real_distance
+
 # Reading reference images from directory
-ref_images = ["focal_length/Ref_image_640mm.jpg", "focal_length/Ref_image_650mm.jpg"]
+ref_images = ["focal_length/Ref_image_700mm.jpg", "focal_length/Ref_image_500mm.jpg"]
 focal_lengths = []
 
 for i, ref_image_path in enumerate(ref_images):
@@ -83,7 +95,7 @@ while True:
         
         rgb_small_frame = np.ascontiguousarray(small_frame[:, :, ::-1])
 
-        # Find all the faces and face enqcodings in the frame of video
+        # Find all the faces and face encodings in the frame of video
         face_locations = face_recognition.face_locations(rgb_small_frame)
         face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
@@ -105,6 +117,25 @@ while True:
             face_names.append(name)
 
     process_this_frame = not process_this_frame
+
+    # Ensure there are at least two faces before attempting to calculate distances
+    num_faces = len(faces_data)
+    if num_faces >= 2:
+        for i in range(num_faces):
+            for j in range(i + 1, num_faces):
+                if i < len(face_names) and j < len(face_names):
+                    face1 = faces_data[i]
+                    face2 = faces_data[j]
+
+                    pixel_distance = calculate_pixel_distance(face1, face2)
+                    ref_pixel_width = face1[0]  # Use the width of the first face as reference
+                    actual_width = Known_width  # Real-world width of the face
+
+                    face1_distance = distances.get(face_names[i], 0)
+                    face2_distance = distances.get(face_names[j], 0)
+
+                    real_distance = calculate_real_distance(face1_distance, face2_distance, pixel_distance, ref_pixel_width, actual_width)
+                    print(f"Real distance between {face_names[i]} and {face_names[j]}: {real_distance} meters")
 
     # Display the results
     for (top, right, bottom, left), name in zip(face_locations, face_names):
