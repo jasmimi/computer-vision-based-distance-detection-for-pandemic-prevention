@@ -92,7 +92,6 @@ while True:
 
     if process_this_frame:
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-        
         rgb_small_frame = np.ascontiguousarray(small_frame[:, :, ::-1])
 
         # Find all the faces and face encodings in the frame of video
@@ -113,7 +112,6 @@ while True:
             best_match_index = np.argmin(face_distances)
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
-
             face_names.append(name)
 
     process_this_frame = not process_this_frame
@@ -135,6 +133,14 @@ while True:
                     face2_distance = distances.get(face_names[j], 0)
 
                     real_distance = calculate_real_distance(face1_distance, face2_distance, pixel_distance, ref_pixel_width, actual_width)
+                    # Draw a line between the two face centers
+                    face1_center = (face1[3], face1[4])
+                    face2_center = (face2[3], face2[4])
+                    cv2.line(frame, face1_center, face2_center, (0, 255, 0), 2)
+
+                    # Display the distance on the line
+                    midpoint = ((face1_center[0] + face2_center[0]) // 2, (face1_center[1] + face2_center[1]) // 2)
+                    cv2.putText(frame, f"{real_distance:.2f} m", midpoint, cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
                     print(f"Real distance between {face_names[i]} and {face_names[j]}: {real_distance} meters")
 
     # Display the results
