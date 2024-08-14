@@ -18,8 +18,7 @@ python integ_facerec_distance_faster.py
 ```
 
 ## Credits
-AUT ENSE891/ENSE892 Industrial Software Project 2024
-Working alongside Professor Peter Chong
+AUT ENSE891/ENSE892 Industrial Software Project 2024 with Professor Peter Chong
 
 This project integrates and adapts code from the following Github Repositories:
 - Face recognition https://github.com/ageitgey/face_recognition
