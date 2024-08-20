@@ -6,7 +6,8 @@ import math
 from init_face_encodings import known_face_encodings, known_face_names
 
 # Focal-length variables
-Known_distances = [0.7, 0.5] # meters
+Known_distances = [1.01, 0.65, 0.33] # New cam
+# Known_distances = [0.7, 0.5] # meters # Old cam
 Known_width = 0.16 # meters
 
 # Camera object, #0 is default/webcam
@@ -72,7 +73,8 @@ def put_responsive_text(image, text, position, box_width, box_height, font=cv2.F
     cv2.putText(image, text, (text_x, text_y), font, font_scale, color, thickness)
 
 # Reading reference images from directory
-ref_images = ["focal_length/Ref_image_700mm.jpg", "focal_length/Ref_image_500mm.jpg"]
+ref_images = ["focal_length/Ref_image_1010mm_cam2.jpg", "focal_length/Ref_image_650mm_cam2.jpg", "focal_length/Ref_image_330mm_cam2.jpg"] # New cam
+# ref_images = ["focal_length/Ref_image_700mm.jpg", "focal_length/Ref_image_500mm.jpg"] Old cam
 focal_lengths = []
 
 for i, ref_image_path in enumerate(ref_images):
