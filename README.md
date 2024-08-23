@@ -1,6 +1,12 @@
 # Computer vision-based distance detection for pandemic prevention
 The 7 million death toll count of COVID-19 highlighted the importance of pandemic prevention measures. They already exist - masks, QR-code scanning, Bluetooth contact tracing, and manual tracing. Due to social and other factors, these effort-requiring existing methods become redunant. Various computer vision techniques can be integrated to create a system which processes video input to identify faces and calculate the distance between these faces. This solution requires minimal participation effort and is long lasting.
 
+## Demo
+### Individual targets
+TBC
+### Multiple targets
+TBC
+
 ## How to run
 Install modules
 ```
