@@ -6,7 +6,8 @@ import math
 from init_face_encodings import known_face_encodings, known_face_names
 
 # Focal-length variables
-Known_distances = [0.7, 0.5] # meters
+Known_distances = [1.01, 0.65, 0.33] # New cam
+# Known_distances = [0.7, 0.5] # meters # Old cam
 Known_width = 0.16 # meters
 
 # Camera object, #0 is default/webcam
@@ -50,6 +51,27 @@ def calculate_real_distance(f1_distance, f2_distance, pixel_distance, ref_pixel_
     real_distance = (pixel_distance / ref_pixel_width) * actual_width * avg_face_distance
     return real_distance
 
+# Function to draw the line and make parts inside the bounding boxes transparent while preserving the original content
+def draw_line_with_transparency(image, start_point, end_point, box1, box2, color, thickness):
+    # Copy the original image to overlay the line on
+    overlay = image.copy()
+
+    # Draw the line on the overlay
+    cv2.line(overlay, start_point, end_point, color, thickness)
+
+    # Save the original content within the bounding boxes
+    box1_content = image[box1[1]:box1[3], box1[0]:box1[2]].copy()
+    box2_content = image[box2[1]:box2[3], box2[0]:box2[2]].copy()
+
+    # Apply the overlay with the line to the original image
+    image = cv2.addWeighted(overlay, 1, image, 0, 0)
+
+    # Restore the original content inside the bounding boxes
+    image[box1[1]:box1[3], box1[0]:box1[2]] = box1_content
+    image[box2[1]:box2[3], box2[0]:box2[2]] = box2_content
+
+    return image
+
 def put_responsive_text(image, text, position, box_width, box_height, font=cv2.FONT_HERSHEY_DUPLEX, color=(255, 255, 255), thickness=1):
     # Initial font scale and thickness
     font_scale = 1.0
@@ -72,7 +94,8 @@ def put_responsive_text(image, text, position, box_width, box_height, font=cv2.F
     cv2.putText(image, text, (text_x, text_y), font, font_scale, color, thickness)
 
 # Reading reference images from directory
-ref_images = ["focal_length/Ref_image_700mm.jpg", "focal_length/Ref_image_500mm.jpg"]
+ref_images = ["focal_length/Ref_image_1010mm_cam2.jpg", "focal_length/Ref_image_650mm_cam2.jpg", "focal_length/Ref_image_330mm_cam2.jpg"] # New cam
+# ref_images = ["focal_length/Ref_image_700mm.jpg", "focal_length/Ref_image_500mm.jpg"] Old cam
 focal_lengths = []
 
 for i, ref_image_path in enumerate(ref_images):
@@ -154,10 +177,17 @@ while True:
                     face2_distance = distances.get(face_names[j], 0)
 
                     real_distance = calculate_real_distance(face1_distance, face2_distance, pixel_distance, ref_pixel_width, actual_width)
+                    
                     # Draw a line between the two face centers
                     face1_center = (face1[3], face1[4])
                     face2_center = (face2[3], face2[4])
-                    cv2.line(frame, face1_center, face2_center, (0, 255, 0), 2)
+
+                    # Bounding boxes: (left, top, right, bottom)
+                    face1_box = (face1[1], face1[2], face1[1] + face1[0], face1[2] + face1[0])
+                    face2_box = (face2[1], face2[2], face2[1] + face2[0], face2[2] + face2[0])
+
+                    # Draw the line with transparency within the bounding boxes
+                    frame = draw_line_with_transparency(frame, face1_center, face2_center, face1_box, face2_box, (0, 255, 0), 2)
 
                     # Display the distance on the line
                     midpoint = ((face1_center[0] + face2_center[0]) // 2, (face1_center[1] + face2_center[1]) // 2)
