@@ -6,7 +6,6 @@ The 7 million death toll count of COVID-19 highlighted the importance of pandemi
 https://github.com/user-attachments/assets/0e9d141c-71eb-4b16-b531-6e7ce78bf1cf
 
 
-
 ## How to run
 Install modules
 ```
