@@ -51,6 +51,27 @@ def calculate_real_distance(f1_distance, f2_distance, pixel_distance, ref_pixel_
     real_distance = (pixel_distance / ref_pixel_width) * actual_width * avg_face_distance
     return real_distance
 
+# Function to draw the line and make parts inside the bounding boxes transparent while preserving the original content
+def draw_line_with_transparency(image, start_point, end_point, box1, box2, color, thickness):
+    # Copy the original image to overlay the line on
+    overlay = image.copy()
+
+    # Draw the line on the overlay
+    cv2.line(overlay, start_point, end_point, color, thickness)
+
+    # Save the original content within the bounding boxes
+    box1_content = image[box1[1]:box1[3], box1[0]:box1[2]].copy()
+    box2_content = image[box2[1]:box2[3], box2[0]:box2[2]].copy()
+
+    # Apply the overlay with the line to the original image
+    image = cv2.addWeighted(overlay, 1, image, 0, 0)
+
+    # Restore the original content inside the bounding boxes
+    image[box1[1]:box1[3], box1[0]:box1[2]] = box1_content
+    image[box2[1]:box2[3], box2[0]:box2[2]] = box2_content
+
+    return image
+
 def put_responsive_text(image, text, position, box_width, box_height, font=cv2.FONT_HERSHEY_DUPLEX, color=(255, 255, 255), thickness=1):
     # Initial font scale and thickness
     font_scale = 1.0
@@ -71,6 +92,14 @@ def put_responsive_text(image, text, position, box_width, box_height, font=cv2.F
     
     # Draw the text
     cv2.putText(image, text, (text_x, text_y), font, font_scale, color, thickness)
+
+def draw_text(image, text, font = cv2.FONT_HERSHEY_SIMPLEX, pos = (0,0), font_scale=3, font_thickness=2, text_color=(0, 255,0), text_color_bg=(0, 0, 0)):
+    x, y = pos
+    text_size, _ = cv2.getTextSize(text, font, font_scale, font_thickness)
+    text_w, text_h = text_size
+    cv2.rectangle(image, pos, (x + text_w, y + text_h), text_color_bg, -1)
+    cv2.putText(image, text, (x, y + text_h + font_scale - 1), font, font_scale, text_color, font_thickness)
+    return text_size
 
 # Reading reference images from directory
 ref_images = ["focal_length/Ref_image_1010mm_cam2.jpg", "focal_length/Ref_image_650mm_cam2.jpg", "focal_length/Ref_image_330mm_cam2.jpg"] # New cam
@@ -97,8 +126,6 @@ if not focal_lengths:
 # Averaging the focal lengths
 Focal_length_found = np.mean(focal_lengths)
 print(f"Average focal length: {Focal_length_found}")
-
-cv2.imshow("ref_image", ref_image)
 
 # Initialise variables
 face_locations = []
@@ -153,23 +180,31 @@ while True:
                     face2_distance = distances.get(face_names[j], 0)
 
                     real_distance = calculate_real_distance(face1_distance, face2_distance, pixel_distance, ref_pixel_width, actual_width)
+                    
                     # Draw a line between the two face centers
                     face1_center = (face1[3], face1[4])
                     face2_center = (face2[3], face2[4])
-                    cv2.line(frame, face1_center, face2_center, (0, 255, 0), 2)
+
+                    # Bounding boxes: (left, top, right, bottom)
+                    face1_box = (face1[1], face1[2], face1[1] + face1[0], face1[2] + face1[0])
+                    face2_box = (face2[1], face2[2], face2[1] + face2[0], face2[2] + face2[0])
+
+                    # Draw the line with transparency within the bounding boxes
+                    frame = draw_line_with_transparency(frame, face1_center, face2_center, face1_box, face2_box, (0, 255, 0), 2)
 
                     # Display the distance on the line
                     midpoint = ((face1_center[0] + face2_center[0]) // 2, (face1_center[1] + face2_center[1]) // 2)
-                    cv2.putText(frame, f"{real_distance:.2f} m", midpoint, cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+                    #cv2.putText(frame, f"{real_distance:.2f} m", midpoint, cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+                    w, h = draw_text(image=frame, text=f"{real_distance:.2f} m", pos=midpoint, font_scale=1, text_color=(255, 255, 255), font_thickness=2)
                     print(f"Real distance between {face_names[i]} and {face_names[j]}: {real_distance} meters")
 
     # Display the results
     for (top, right, bottom, left), name in zip(face_locations, face_names):
-        face_center_x = (left + right) // 2
-        if face_center_x < width // 2:
-            color = quadrant_colors[0] if face_center_x < width // 4 else quadrant_colors[1]
-        else:
-            color = quadrant_colors[2] if face_center_x < 3 * width // 4 else quadrant_colors[3]
+        # face_center_x = (left + right) // 2
+        # if face_center_x < width // 2:
+        #     color = quadrant_colors[0] if face_center_x < width // 4 else quadrant_colors[1]
+        # else:
+        #     color = quadrant_colors[2] if face_center_x < 3 * width // 4 else quadrant_colors[3]
 
         for face_width_in_frame, face_x, face_y, FC_X, FC_Y in faces_data:
             if face_x <= left <= face_x + face_width_in_frame and face_y <= top <= face_y + (bottom - top):
@@ -180,11 +215,11 @@ while True:
                 break
 
         # Draw a box around the face"
-        cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
+        cv2.rectangle(frame, (left, top), (right, bottom), quadrant_colors[2], 2)
 
         # Draw a label with a name below the face
         label = f"{name}, {distances.get(name,'N/A')} m"
-        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), color, cv2.FILLED)
+        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), quadrant_colors[2], cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         box_width = right - left
         box_height = 35  # or any other desired height for the label box
