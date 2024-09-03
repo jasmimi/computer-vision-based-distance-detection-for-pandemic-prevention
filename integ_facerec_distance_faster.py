@@ -24,7 +24,7 @@ def FocalLength(measured_distance, real_width, width_in_rf_image):
     focal_length = (width_in_rf_image * measured_distance) / real_width
     return focal_length
 
-def Distance_finder(Focal_Length, real_face_width, face_width_in_frame):
+def distance_finder(Focal_Length, real_face_width, face_width_in_frame):
     distance = (real_face_width * Focal_Length) / face_width_in_frame
     return distance
 
@@ -93,6 +93,14 @@ def put_responsive_text(image, text, position, box_width, box_height, font=cv2.F
     # Draw the text
     cv2.putText(image, text, (text_x, text_y), font, font_scale, color, thickness)
 
+def draw_text(image, text, font = cv2.FONT_HERSHEY_SIMPLEX, pos = (0,0), font_scale=3, font_thickness=2, text_color=(0, 255,0), text_color_bg=(0, 0, 0)):
+    x, y = pos
+    text_size, _ = cv2.getTextSize(text, font, font_scale, font_thickness)
+    text_w, text_h = text_size
+    cv2.rectangle(image, pos, (x + text_w, y + text_h), text_color_bg, -1)
+    cv2.putText(image, text, (x, y + text_h + font_scale - 1), font, font_scale, text_color, font_thickness)
+    return text_size
+
 # Reading reference images from directory
 ref_images = ["focal_length/Ref_image_1010mm_cam2.jpg", "focal_length/Ref_image_650mm_cam2.jpg", "focal_length/Ref_image_330mm_cam2.jpg"] # New cam
 # ref_images = ["focal_length/Ref_image_700mm.jpg", "focal_length/Ref_image_500mm.jpg"] Old cam
@@ -119,7 +127,7 @@ if not focal_lengths:
 Focal_length_found = np.mean(focal_lengths)
 print(f"Average focal length: {Focal_length_found}")
 
-cv2.imshow("ref_image", ref_image)
+#cv2.imshow("ref_image", ref_image)
 
 # Initialise variables
 face_locations = []
@@ -191,7 +199,8 @@ while True:
 
                     # Display the distance on the line
                     midpoint = ((face1_center[0] + face2_center[0]) // 2, (face1_center[1] + face2_center[1]) // 2)
-                    cv2.putText(frame, f"{real_distance:.2f} m", midpoint, cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+                    #cv2.putText(frame, f"{real_distance:.2f} m", midpoint, cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 2)
+                    w, h = draw_text(image=frame, text=f"{real_distance:.2f} m", pos=midpoint, font_scale=1, text_color=(255, 255, 255), font_thickness=2)
                     print(f"Real distance between {face_names[i]} and {face_names[j]}: {real_distance} meters")
 
     # Display the results
@@ -202,27 +211,27 @@ while True:
         bottom *= 4
         left *= 4
 
-        face_center_x = (left + right) // 2
-        if face_center_x < width // 2:
-            color = quadrant_colors[0] if face_center_x < width // 4 else quadrant_colors[1]
-        else:
-            color = quadrant_colors[2] if face_center_x < 3 * width // 4 else quadrant_colors[3]
+        # face_center_x = (left + right) // 2
+        # if face_center_x < width // 2:
+        #     color = quadrant_colors[0] if face_center_x < width // 4 else quadrant_colors[1]
+        # else:
+        #     color = quadrant_colors[2] if face_center_x < 3 * width // 4 else quadrant_colors[3]
 
 
         for face_width_in_frame, face_x, face_y, FC_X, FC_Y in faces_data:
             if face_x <= left <= face_x + face_width_in_frame and face_y <= top <= face_y + (bottom - top):
                 if face_width_in_frame != 0:
-                    Distance = Distance_finder(Focal_length_found, Known_width, face_width_in_frame)
+                    Distance = distance_finder(Focal_length_found, Known_width, face_width_in_frame)
                     Distance = round(Distance, 2)
                     distances[name] = Distance
                 break
 
         # Draw a box around the face"
-        cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
+        cv2.rectangle(frame, (left, top), (right, bottom), quadrant_colors[2], 2)
 
         # Draw a label with a name below the face
         label = f"{name}, {distances.get(name,'N/A')} m"
-        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), color, cv2.FILLED)
+        cv2.rectangle(frame, (left, bottom - 35), (right, bottom), quadrant_colors[2], cv2.FILLED)
         font = cv2.FONT_HERSHEY_DUPLEX
         box_width = right - left
         box_height = 35  # or any other desired height for the label box
