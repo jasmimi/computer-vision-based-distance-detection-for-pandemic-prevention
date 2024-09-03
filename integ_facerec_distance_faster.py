@@ -24,7 +24,7 @@ def FocalLength(measured_distance, real_width, width_in_rf_image):
     focal_length = (width_in_rf_image * measured_distance) / real_width
     return focal_length
 
-def Distance_finder(Focal_Length, real_face_width, face_width_in_frame):
+def distance_finder(Focal_Length, real_face_width, face_width_in_frame):
     distance = (real_face_width * Focal_Length) / face_width_in_frame
     return distance
 
@@ -221,7 +221,7 @@ while True:
         for face_width_in_frame, face_x, face_y, FC_X, FC_Y in faces_data:
             if face_x <= left <= face_x + face_width_in_frame and face_y <= top <= face_y + (bottom - top):
                 if face_width_in_frame != 0:
-                    Distance = Distance_finder(Focal_length_found, Known_width, face_width_in_frame)
+                    Distance = distance_finder(Focal_length_found, Known_width, face_width_in_frame)
                     Distance = round(Distance, 2)
                     distances[name] = Distance
                 break
