@@ -127,8 +127,6 @@ if not focal_lengths:
 Focal_length_found = np.mean(focal_lengths)
 print(f"Average focal length: {Focal_length_found}")
 
-#cv2.imshow("ref_image", ref_image)
-
 # Initialise variables
 face_locations = []
 face_encodings = []

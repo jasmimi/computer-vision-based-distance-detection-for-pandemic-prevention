@@ -224,6 +224,7 @@ while True:
         box_width = right - left
         box_height = 35  # or any other desired height for the label box
         put_responsive_text(frame, label, (left, bottom - box_height), box_width, box_height, color=(255, 255, 255))
+    
     # Display image
     cv2.imshow("frame", frame)
 
