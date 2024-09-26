@@ -81,16 +81,19 @@ while True:
                     face1_box = (face1[1], face1[2], face1[1] + face1[0], face1[2] + face1[0])
                     face2_box = (face2[1], face2[2], face2[1] + face2[0], face2[2] + face2[0])
 
-                    # Draw the line with transparency within the bounding boxes
-                    frame = display_format.draw_line_with_transparency(frame, face1_center, face2_center, face1_box, face2_box, (0, 255, 0), 2)
+                    # Print names and distance if real distance < 2
+                    if distance_calc.breaking_social_distancing(real_distance):
+                        print(f"Real distance between {face_names[i]} and {face_names[j]}: {real_distance} meters")
+                        frame = display_format.draw_line_with_transparency(frame, face1_center, face2_center, face1_box, face2_box, (255, 0, 0), 2)
+                    else:
+                        # Draw the line with transparency within the bounding boxes
+                        frame = display_format.draw_line_with_transparency(frame, face1_center, face2_center, face1_box, face2_box, (0, 255, 0), 2)
 
                     # Display the distance on the line
                     midpoint = ((face1_center[0] + face2_center[0]) // 2, (face1_center[1] + face2_center[1]) // 2)
                     w, h = display_format.draw_text(image=frame, text=f"{real_distance:.2f} m", pos=midpoint, font_scale=1, text_color=(255, 255, 255), font_thickness=2)
                     
-                    # Print names and distance if real distance < 2
-                    if distance_calc.breaking_social_distancing(real_distance):
-                        print(f"Real distance between {face_names[i]} and {face_names[j]}: {real_distance} meters")
+
 
     # Display the results
     for (top, right, bottom, left), name in zip(face_locations, face_names):
