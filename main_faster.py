@@ -24,6 +24,10 @@ process_this_frame = True
 
 quadrant_colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]  # Blue, Green, Red, Yellow
 
+# Focal length variables
+Known_width = focal_length_calc.Known_width
+Focal_length_found = focal_length_calc.calc(face_calc.face_data)
+
 while True:
     _, frame = cap.read()
     height, width, _ = frame.shape
@@ -66,7 +70,7 @@ while True:
 
                     pixel_distance = distance_calc.calculate_pixel_distance(face1, face2)
                     ref_pixel_width = face1[0]  # Use the width of the first face as reference
-                    actual_width = focal_length_calc.Known_width  # Real-world width of the face
+                    actual_width = Known_width  # Real-world width of the face
 
                     face1_distance = distances.get(face_names[i], 0)
                     face2_distance = distances.get(face_names[j], 0)
@@ -106,7 +110,7 @@ while True:
         for face_width_in_frame, face_x, face_y, FC_X, FC_Y in faces_data:
             if face_x <= left <= face_x + face_width_in_frame and face_y <= top <= face_y + (bottom - top):
                 if face_width_in_frame != 0:
-                    Distance = distance_calc.distance_finder(focal_length_calc.calc(face_calc.face_data), focal_length_calc.Known_width, face_width_in_frame)
+                    Distance = distance_calc.distance_finder(Focal_length_found, Known_width, face_width_in_frame)
                     Distance = round(Distance, 2)
                     distances[name] = Distance
                 break
