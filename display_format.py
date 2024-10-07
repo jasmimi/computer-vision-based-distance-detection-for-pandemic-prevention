@@ -1,3 +1,4 @@
+# Imports
 import cv2
 
 # Function to draw the line and make parts inside the bounding boxes transparent while preserving the original content
@@ -21,6 +22,7 @@ def draw_line_with_transparency(image, start_point, end_point, box1, box2, color
 
     return image
 
+# Makes text resize with bounding box
 def put_responsive_text(image, text, position, box_width, box_height, font=cv2.FONT_HERSHEY_DUPLEX, color=(255, 255, 255), thickness=1):
     # Initial font scale and thickness
     font_scale = 1.0
@@ -42,6 +44,7 @@ def put_responsive_text(image, text, position, box_width, box_height, font=cv2.F
     # Draw the text
     cv2.putText(image, text, (text_x, text_y), font, font_scale, color, thickness)
 
+# Draws distance between text on line
 def draw_text(image, text, font = cv2.FONT_HERSHEY_SIMPLEX, pos = (0,0), font_scale=3, font_thickness=2, text_color=(0, 255,0), text_color_bg=(0, 0, 0)):
     x, y = pos
     text_size, _ = cv2.getTextSize(text, font, font_scale, font_thickness)
