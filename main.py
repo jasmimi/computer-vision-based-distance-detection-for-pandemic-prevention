@@ -28,6 +28,7 @@ quadrant_colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]  # Blue
 Known_width = focal_length_calc.Known_width
 Focal_length_found = focal_length_calc.calc(face_calc.face_data)
 
+# Main loop
 while True:
     _, frame = cap.read()
     height, width, _ = frame.shape

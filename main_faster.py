@@ -28,12 +28,14 @@ quadrant_colors = [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]  # Blue
 Known_width = focal_length_calc.Known_width
 Focal_length_found = focal_length_calc.calc(face_calc.face_data)
 
+# Main loop
 while True:
     _, frame = cap.read()
     height, width, _ = frame.shape
     faces_data = face_calc.face_data(frame, True)
 
     if process_this_frame:
+        # Scale to 1/4 size to quicken performance
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
         rgb_small_frame = np.ascontiguousarray(small_frame[:, :, ::-1])
 
@@ -57,6 +59,7 @@ while True:
                 name = known_face_names[best_match_index]
             face_names.append(name)
 
+    # Process every other frame
     process_this_frame = not process_this_frame
 
     # Ensure there are at least two faces before attempting to calculate distances

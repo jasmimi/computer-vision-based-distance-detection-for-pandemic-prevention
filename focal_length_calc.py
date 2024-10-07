@@ -18,6 +18,7 @@ def FocalLength(measured_distance, real_width, width_in_rf_image):
 ref_images = ["focal_length/Ref_image_1010mm_cam2.jpg", "focal_length/Ref_image_650mm_cam2.jpg", "focal_length/Ref_image_330mm_cam2.jpg"] # New cam
 focal_lengths = []
 
+# Find focal length from list of reference images with known distances and face width
 def calc(face_data):
   for i, ref_image_path in enumerate(ref_images):
       print(f"Loading image: {ref_image_path}")
