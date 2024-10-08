@@ -3,23 +3,23 @@ The 7 million death toll count of COVID-19 highlighted the importance of pandemi
 
 ## Demo using main_faster.py
 
-https://github.com/user-attachments/assets/0e9d141c-71eb-4b16-b531-6e7ce78bf1cf
+https://github.com/user-attachments/assets/a1fc0ce3-d75b-4729-a211-e913768ff26c
 
 
 ## How to run
-Install modules
+Install modules, use pip3/pip 
 ```
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 pip3 install opencv-python face_recognition
 ```
 
-Run preferred file (uses webcam, no written file)
+Run preferred file (uses webcam, no written file), use python3/python
 ```
 # standard speed
-python main.py
+python3 main.py
 
 # faster by processing every other frame and scaling down input
-python main_faster.py
+python3 main_faster.py
 ```
 
 ## Credits
